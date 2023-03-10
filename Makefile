@@ -9,8 +9,8 @@ help:
 env38:
 	python3.8 -m venv env38
 
-.PHONY: clean_env37
-clean_env37:
+.PHONY: clean_env38
+clean_env38:
 	rm -rf env38
 
 .PHONY: install
@@ -64,8 +64,8 @@ generate:  ## Generate the pydantic models from the JSON Schemas to the ingestio
 	rm -rf ingestion/src/metadata/generated
 	mkdir -p ingestion/src/metadata/generated
 	python scripts/datamodel_generation.py
-	$(MAKE) py_antlr js_antlr
-	$(MAKE) install
+	# $(MAKE) py_antlr js_antlr
+	# $(MAKE) install
 
 ## Ingestion tests & QA
 .PHONY: run_ometa_integration_tests
@@ -115,11 +115,11 @@ coverage_apis:  ## Run the python tests on openmetadata-airflow-apis
 ## Ingestion publish
 .PHONY: publish
 publish:  ## Publish the ingestion module to PyPI
-	$(MAKE) install_dev generate
+	# $(MAKE) install_dev generate
 	cd ingestion; \
 	  python setup.py install sdist bdist_wheel; \
-	  twine check dist/*; \
-	  twine upload dist/*
+	#   twine check dist/*; \
+	#   twine upload dist/*
 
 ## Yarn
 .PHONY: yarn_install_cache
@@ -166,8 +166,8 @@ core_publish:  ## Install, generate and publish the ingestion-core module to Tes
 	cd ingestion-core; \
 		. venv/bin/activate; \
 		python setup.py install sdist bdist_wheel; \
-		twine check dist/*; \
-		twine upload -r testpypi dist/*
+		# twine check dist/*; \
+		# twine upload -r testpypi dist/*
 
 .PHONY: core_py_antlr
 core_py_antlr:  ## Generate the Python core code for parsing FQNs under ingestion-core

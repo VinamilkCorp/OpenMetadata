@@ -28,7 +28,7 @@ def get_long_description():
 
 # Add here versions required for multiple plugins
 VERSIONS = {
-    "airflow": "apache-airflow==2.3.3",
+    "airflow": "apache-airflow==2.5.0",
     "avro": "avro~=1.11",
     "boto3": "boto3>=1.20,<2.0",  # No need to add botocore separately. It's a dep from boto3
     "geoalchemy2": "GeoAlchemy2~=0.12",
@@ -37,7 +37,7 @@ VERSIONS = {
     "grpc-tools": "grpcio-tools>=1.47.2",
     "msal": "msal~=1.2",
     "neo4j": "neo4j~=5.3.0",
-    "pandas": "pandas==1.3.5",
+    "pandas": "pandas==1.5.2",
     "pyarrow": "pyarrow~=10.0",
     "pydomo": "pydomo~=0.3",
     "pymysql": "pymysql>=1.0.2",
@@ -65,7 +65,7 @@ COMMONS = {
         VERSIONS[
             "grpc-tools"
         ],  # grpcio-tools already depends on grpcio. No need to add separately
-        "protobuf",
+        "protobuf<=3.20.0",
     },
 }
 
