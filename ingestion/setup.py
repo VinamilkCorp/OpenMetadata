@@ -37,7 +37,7 @@ VERSIONS = {
     "grpc-tools": "grpcio-tools>=1.47.2",
     "msal": "msal~=1.2",
     "neo4j": "neo4j~=5.3.0",
-    "pandas": "pandas==1.3.5",
+    "pandas": "pandas==1.5.2",
     "pyarrow": "pyarrow~=10.0",
     "pydomo": "pydomo~=0.3",
     "pymysql": "pymysql>=1.0.2",

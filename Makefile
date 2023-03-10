@@ -56,8 +56,8 @@ generate:  ## Generate the pydantic models from the JSON Schemas to the ingestio
 	rm -rf ingestion/src/metadata/generated
 	mkdir -p ingestion/src/metadata/generated
 	python scripts/datamodel_generation.py
-	$(MAKE) py_antlr js_antlr
-	$(MAKE) install
+	# $(MAKE) py_antlr js_antlr
+	# $(MAKE) install
 
 ## Ingestion tests & QA
 .PHONY: run_ometa_integration_tests
