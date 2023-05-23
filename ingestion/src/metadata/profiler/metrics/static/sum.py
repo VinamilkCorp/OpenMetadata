@@ -20,6 +20,8 @@ from metadata.profiler.metrics.core import StaticMetric, _label
 from metadata.profiler.orm.functions.length import LenFn
 from metadata.profiler.orm.functions.sum import SumFn
 from metadata.profiler.orm.registry import is_concatenable, is_quantifiable
+from sqlalchemy.ext.compiler import compiles
+from metadata.profiler.orm.registry import Dialects
 
 
 class Sum(StaticMetric):
@@ -51,3 +53,10 @@ class Sum(StaticMetric):
         if is_quantifiable(self.col.type):
             return sum(df[self.col.name].sum() for df in dfs)
         return None
+
+
+@compiles(Sum, Dialects.ClickHouse)
+def _(element, compiler, **kw):
+    """Handle case for empty table. If empty, clickhouse returns NaN"""
+    proc = compiler.process(element.clauses, **kw)
+    return f"if(isNaN(Sum({proc})), null, Sum({proc}))"
