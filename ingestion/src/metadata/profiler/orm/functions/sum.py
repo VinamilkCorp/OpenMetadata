@@ -87,3 +87,10 @@ def _(element, compiler, **kw):
     """Handle the case for DB2 where it requires to type cast the variables"""
     proc = compiler.process(element.clauses, **kw).replace("?", "CAST(? AS INT)")
     return f"SUM(CAST({proc} AS BIGINT))"
+
+
+@compiles(SumFn, Dialects.ClickHouse)
+def _(element, compiler, **kw):
+    """Handle case for empty table. If empty, clickhouse returns NaN"""
+    proc = compiler.process(element.clauses, **kw)
+    return f"if(isNaN(Sum({proc})), null, Sum({proc}))"

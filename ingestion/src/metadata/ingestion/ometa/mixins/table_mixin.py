@@ -67,7 +67,7 @@ class OMetaTableMixin:
         try:
             resp = self.client.put(
                 f"{self.get_suffix(Table)}/{table.id.__root__}/sampleData",
-                data=sample_data.json(),
+                data=self._clean_request_params(sample_data.json()),
             )
         except Exception as exc:
             logger.debug(traceback.format_exc())
@@ -124,6 +124,11 @@ class OMetaTableMixin:
 
         return None
 
+    def _clean_request_params(self, json_str: str):
+        json_str = json_str.replace("Infinity", '"Infinity"')
+        json_str = json_str.replace("NaN", '"NaN"')
+        return json_str
+
     def ingest_profile_data(
         self, table: Table, profile_request: CreateTableProfileRequest
     ) -> Table:
@@ -133,9 +138,10 @@ class OMetaTableMixin:
         :param table: Table Entity to update
         :param table_profile: Profile data to add
         """
+
         resp = self.client.put(
             f"{self.get_suffix(Table)}/{table.id.__root__}/tableProfile",
-            data=profile_request.json(),
+            data=self._clean_request_params(profile_request.json()),
         )
         return Table(**resp)
 

@@ -15,7 +15,7 @@ clean_env38:
 
 .PHONY: install
 install:  ## Install the ingestion module to the current environment
-	python -m pip install ingestion/
+	python3 -m pip install ingestion/
 
 .PHONY: install_apis
 install_apis:  ## Install the REST APIs module to the current environment
@@ -63,9 +63,9 @@ generate:  ## Generate the pydantic models from the JSON Schemas to the ingestio
 	@echo "Make sure to first run the install_dev recipe"
 	rm -rf ingestion/src/metadata/generated
 	mkdir -p ingestion/src/metadata/generated
-	python scripts/datamodel_generation.py
-	# $(MAKE) py_antlr js_antlr
-	# $(MAKE) install
+	python3 scripts/datamodel_generation.py
+	$(MAKE) py_antlr js_antlr
+	$(MAKE) install
 
 ## Ingestion tests & QA
 .PHONY: run_ometa_integration_tests

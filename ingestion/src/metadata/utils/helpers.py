@@ -344,6 +344,7 @@ def format_large_string_numbers(number: Union[float, int]) -> str:
     units = ["", "K", "M", "B", "T"]
     constant_k = 1000.0
     magnitude = int(floor(log(abs(number), constant_k)))
+    magnitude = 4 if magnitude > 4 else magnitude
     return f"{number / constant_k**magnitude:.2f}{units[magnitude]}"
 
 
