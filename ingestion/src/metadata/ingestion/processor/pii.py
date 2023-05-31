@@ -71,8 +71,7 @@ class ColumnNameScanner:
         PiiTypes.CREDIT_CARD: re.compile("^.*(card).*$", re.IGNORECASE),
         PiiTypes.BANKACC: re.compile("^.*(bank|acc|amount).*$", re.IGNORECASE),
         PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
-    }
-    non_sensitive_regex = {
+        PiiTypes.PHONE: re.compile("^.*(phone|sdt).*$", re.IGNORECASE),
         PiiTypes.PERSON: re.compile(
             "^.*(firstname|fname|lastname|lname|"
             "fullname|maidenname|_name|"
@@ -91,8 +90,8 @@ class ColumnNameScanner:
             "zipcode|zip|postal|zone|borough).*$",
             re.IGNORECASE,
         ),
-        PiiTypes.PHONE: re.compile("^.*(phone).*$", re.IGNORECASE),
     }
+    non_sensitive_regex = {}
 
 
 class NEREntity(Enum):
