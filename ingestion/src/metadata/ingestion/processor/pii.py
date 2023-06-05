@@ -65,13 +65,11 @@ class ColumnNameScanner:
 
     sensitive_regex = {
         PiiTypes.PASSWORD: re.compile("^.*password.*$", re.IGNORECASE),
-        PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
-        PiiTypes.KEY: re.compile("^.*(key).*$", re.IGNORECASE),
         PiiTypes.SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE),
-        PiiTypes.CREDIT_CARD: re.compile("^.*(card).*$", re.IGNORECASE),
+        PiiTypes.CREDIT_CARD: re.compile("^.*(card|credit|visa|master).*$", re.IGNORECASE),
         PiiTypes.BANKACC: re.compile("^.*(bank|acc|amount).*$", re.IGNORECASE),
         PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
-        PiiTypes.PHONE: re.compile("^.*(phone|sdt).*$", re.IGNORECASE),
+        PiiTypes.PHONE: re.compile("^.*(phone|so_dien_thoai|sdt).*$", re.IGNORECASE),
         PiiTypes.PERSON: re.compile(
             "^.*(firstname|fname|lastname|lname|"
             "fullname|maidenname|_name|"
@@ -91,7 +89,10 @@ class ColumnNameScanner:
             re.IGNORECASE,
         ),
     }
-    non_sensitive_regex = {}
+    non_sensitive_regex = {
+        PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
+        PiiTypes.KEY: re.compile("^.*(key).*$", re.IGNORECASE),
+    }
 
 
 class NEREntity(Enum):
