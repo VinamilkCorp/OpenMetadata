@@ -320,7 +320,7 @@ class OMetaPatchMixin(OMetaPatchMixinBase):
         self,
         entity_id: Union[str, basic.Uuid],
         column_name: str,
-        tag_fqn: str,
+        tag_fqn_list: List[str] = [],
         from_glossary: bool = False,
         operation: Union[
             PatchOperation.ADD, PatchOperation.REMOVE
@@ -353,6 +353,7 @@ class OMetaPatchMixin(OMetaPatchMixinBase):
         try:
             res = None
             if operation == PatchOperation.ADD:
+
                 res = self.client.patch(
                     path=f"{self.get_suffix(Table)}/{model_str(entity_id)}",
                     data=json.dumps(
@@ -360,7 +361,7 @@ class OMetaPatchMixin(OMetaPatchMixinBase):
                             {
                                 PatchField.OPERATION: PatchOperation.ADD,
                                 PatchField.PATH: PatchPath.COLUMNS_TAGS.format(
-                                    index=col_index, tag_index=tag_index
+                                    index=col_index, tag_index=tag_index + idx
                                 ),
                                 PatchField.VALUE: {
                                     PatchValue.LABEL_TYPE: LabelType.Automated.value,
@@ -373,23 +374,50 @@ class OMetaPatchMixin(OMetaPatchMixinBase):
                                     PatchValue.TAG_FQN: tag_fqn,
                                 },
                             }
+                            for idx, tag_fqn in enumerate(tag_fqn_list)
                         ]
                     ),
                 )
             elif operation == PatchOperation.REMOVE:
-                res = self.client.patch(
-                    path=f"{self.get_suffix(Table)}/{model_str(entity_id)}",
-                    data=json.dumps(
-                        [
-                            {
-                                PatchField.OPERATION: PatchOperation.REMOVE,
-                                PatchField.PATH: PatchPath.COLUMNS_TAGS.format(
-                                    index=col_index, tag_index=tag_index
-                                ),
-                            }
-                        ]
-                    ),
-                )
+                index: int = 0
+                is_tag_found: bool = False
+                data: List = [
+                    {
+                        PatchField.OPERATION: PatchOperation.REMOVE,
+                        PatchField.PATH: PatchPath.COLUMNS_TAGS.format(
+                            index=col_index, tag_index=tag_index - idx
+                        ),
+                    }
+                    for idx, _ in enumerate(tag_fqn_list)
+                ]
+
+                for tag in col.tags:
+                    if tag.tagFQN.__root__ in tag_fqn_list:
+                        is_tag_found = True
+                        continue
+
+                    data.append(
+                        {
+                            PatchField.OPERATION: PatchOperation.REPLACE,
+                            PatchField.PATH: PatchPath.COLUMNS_TAGS.format(
+                                index=col_index, tag_index=index
+                            ),
+                            PatchField.VALUE: {
+                                PatchValue.LABEL_TYPE: tag.labelType.value,
+                                PatchValue.SOURCE: tag.source.value,
+                                PatchValue.STATE: tag.state.value,
+                                PatchValue.TAG_FQN: tag.tagFQN.__root__,
+                            },
+                        }
+                    )
+                    index += 1
+
+                if is_tag_found:
+                    res = self.client.patch(
+                        path=f"{self.get_suffix(Table)}/{model_str(entity_id)}",
+                        data=json.dumps(data),
+                    )
+
             return Table(**res) if res is not None else res
 
         except Exception as exc:

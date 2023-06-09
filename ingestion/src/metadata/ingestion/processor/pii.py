@@ -22,6 +22,8 @@ from metadata.generated.schema.entity.classification.tag import Tag
 from metadata.generated.schema.entity.data.table import Table, TableData
 from metadata.ingestion.ometa.ometa_api import OpenMetadata
 from metadata.utils import fqn
+from metadata.ingestion.ometa.mixins.patch_mixin_utils import PatchOperation
+from metadata.utils.helpers import find_column_in_table_with_index
 
 PII = "PII"
 
@@ -93,7 +95,7 @@ class ColumnNameScanner:
     }
     non_sensitive_regex = {
         PiiTypes.USER_NAME: re.compile(
-            "^.*user(id|username|user_name).*$", re.IGNORECASE
+            "^.*(user|client|person).*(name).*$", re.IGNORECASE
         ),
         PiiTypes.KEY: re.compile("^.*(key).*$", re.IGNORECASE),
     }
@@ -213,16 +215,44 @@ class NERScanner:
         process function to start processing sample data
         """
         len_of_rows = len(table_data.rows[0]) if table_data.rows else 0
-        for idx in range(len_of_rows):
 
-            # TODO: Alway scan and overide that inluce ADD and REMOVE
-            # pii_found = False
-            # for tag in table_entity.columns[idx].tags or []:
-            #     if PII in tag.tagFQN.__root__:
-            #         pii_found = True
-            #         continue
-            # if pii_found is True:
-            #     continue
+        table: Table = client._fetch_entity_if_exists(
+            entity=Table, entity_id=table_entity.id
+        )
+        if table:
+            for idx in range(len_of_rows):
+                column_name = table.columns[idx].name.__root__
+                col_index, col = find_column_in_table_with_index(
+                    column_name=column_name, table=table
+                )
+
+                if col_index is None:
+                    logging.warning(f"Cannot find column {column_name} in Table.")
+                    continue
+
+                pii_tag_fqn_list: List = []
+                for tag in col.tags or []:
+                    if PII in tag.tagFQN.__root__:
+                        pii_tag_fqn_list.append(tag.tagFQN.__root__)
+
+                logging.info(f"REMOVE TAGS {pii_tag_fqn_list} FROM {column_name}")
+                if pii_tag_fqn_list:
+                    client.patch_column_tag(
+                        entity_id=table.id,
+                        column_name=column_name,
+                        tag_fqn_list=pii_tag_fqn_list,
+                        operation=PatchOperation.REMOVE,
+                    )
+
+        for idx in range(len_of_rows):
+            pii_found = False
+            for tag in table_entity.columns[idx].tags or []:
+                if PII in tag.tagFQN.__root__:
+                    pii_found = True
+                    continue
+
+            if pii_found is True:
+                continue
 
             tag_type, confidence = self.column_name_scan(
                 table_data.columns[idx].__root__
@@ -235,9 +265,13 @@ class NERScanner:
                     classification_name=PII,
                     tag_name=tag_type,
                 )
+                logging.info(
+                    f"ADD TAG {tag_fqn} FROM {table_entity.columns[idx].name.__root__}"
+                )
                 client.patch_column_tag(
                     entity_id=table_entity.id,
                     column_name=table_entity.columns[idx].name.__root__,
-                    tag_fqn=tag_fqn,
+                    tag_fqn_list=[tag_fqn],
                     is_suggested=True,
+                    operation=PatchOperation.ADD,
                 )
