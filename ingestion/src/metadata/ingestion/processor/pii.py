@@ -66,14 +66,16 @@ class ColumnNameScanner:
     sensitive_regex = {
         PiiTypes.PASSWORD: re.compile("^.*password.*$", re.IGNORECASE),
         PiiTypes.SSN: re.compile("^.*(ssn|social).*$", re.IGNORECASE),
-        PiiTypes.CREDIT_CARD: re.compile("^.*(card|credit|visa|master).*$", re.IGNORECASE),
+        PiiTypes.CREDIT_CARD: re.compile(
+            "^.*(card|credit|visa|master|so_tai_khoan).*$", re.IGNORECASE
+        ),
         PiiTypes.BANKACC: re.compile("^.*(bank|acc|amount).*$", re.IGNORECASE),
         PiiTypes.EMAIL: re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
         PiiTypes.PHONE: re.compile("^.*(phone|so_dien_thoai|sdt).*$", re.IGNORECASE),
         PiiTypes.PERSON: re.compile(
             "^.*(firstname|fname|lastname|lname|"
-            "fullname|maidenname|_name|"
-            "nickname|name_suffix|name).*$",
+            "fullname|maidenname|"
+            "nickname|name_suffix).*$",
             re.IGNORECASE,
         ),
         PiiTypes.BIRTH_DATE: re.compile(
@@ -85,12 +87,14 @@ class ColumnNameScanner:
         PiiTypes.NATIONALITY: re.compile("^.*(nationality).*$", re.IGNORECASE),
         PiiTypes.ADDRESS: re.compile(
             "^.*(address|city|state|county|country|"
-            "zipcode|zip|postal|zone|borough).*$",
+            "zipcode|zip|postal|zone|borough|dia_chi).*$",
             re.IGNORECASE,
         ),
     }
     non_sensitive_regex = {
-        PiiTypes.USER_NAME: re.compile("^.*user(id|name|).*$", re.IGNORECASE),
+        PiiTypes.USER_NAME: re.compile(
+            "^.*user(id|username|user_name).*$", re.IGNORECASE
+        ),
         PiiTypes.KEY: re.compile("^.*(key).*$", re.IGNORECASE),
     }
 
@@ -210,16 +214,20 @@ class NERScanner:
         """
         len_of_rows = len(table_data.rows[0]) if table_data.rows else 0
         for idx in range(len_of_rows):
-            pii_found = False
-            for tag in table_entity.columns[idx].tags or []:
-                if PII in tag.tagFQN.__root__:
-                    pii_found = True
-                    continue
-            if pii_found is True:
-                continue
+
+            # TODO: Alway scan and overide that inluce ADD and REMOVE
+            # pii_found = False
+            # for tag in table_entity.columns[idx].tags or []:
+            #     if PII in tag.tagFQN.__root__:
+            #         pii_found = True
+            #         continue
+            # if pii_found is True:
+            #     continue
+
             tag_type, confidence = self.column_name_scan(
                 table_data.columns[idx].__root__
             ) or self.scan([row[idx] for row in table_data.rows])
+
             if tag_type and confidence >= thresold_confidence / 100:
                 tag_fqn = fqn.build(
                     self.metadata,
