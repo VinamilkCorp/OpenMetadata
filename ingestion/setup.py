@@ -32,7 +32,7 @@ VERSIONS = {
     "avro": "avro~=1.11",
     "boto3": "boto3>=1.20,<2.0",  # No need to add botocore separately. It's a dep from boto3
     "geoalchemy2": "GeoAlchemy2~=0.12",
-    "google-cloud-storage": "google-cloud-storage==1.43.0",
+    "google-cloud-storage": "google-cloud-storage>=2.7.0",
     "great-expectations": "great-expectations~=0.16.0",
     "grpc-tools": "grpcio-tools>=1.47.2",
     "msal": "msal~=1.2",
@@ -121,7 +121,7 @@ plugins: Dict[str, Set[str]] = {
     "backup": {VERSIONS["boto3"], "azure-identity", "azure-storage-blob"},
     "bigquery": {
         "cachetools",
-        "google-cloud-datacatalog==3.6.2",
+        "google-cloud-datacatalog>=3.11.1",
         "google-cloud-logging",
         VERSIONS["pyarrow"],
         "sqlalchemy-bigquery>=1.2.2",
