@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := help 
 PY_SOURCE ?= ingestion/src
 
 .PHONY: help
@@ -7,7 +7,7 @@ help:
 
 .PHONY: install
 install:  ## Install the ingestion module to the current environment
-	python -m pip install ingestion/
+	python3 -m pip install ingestion/
 
 .PHONY: install_apis
 install_apis:  ## Install the REST APIs module to the current environment
@@ -55,9 +55,9 @@ generate:  ## Generate the pydantic models from the JSON Schemas to the ingestio
 	@echo "Make sure to first run the install_dev recipe"
 	rm -rf ingestion/src/metadata/generated
 	mkdir -p ingestion/src/metadata/generated
-	python scripts/datamodel_generation.py
+	python3 scripts/datamodel_generation.py
 	$(MAKE) py_antlr js_antlr
-	$(MAKE) install
+	# $(MAKE) install
 
 ## Ingestion tests & QA
 .PHONY: run_ometa_integration_tests
@@ -79,7 +79,7 @@ run_python_tests:  ## Run all Python tests with coverage
 coverage:  ## Run all Python tests and generate the coverage XML report
 	$(MAKE) run_python_tests
 	coverage xml --rcfile ingestion/.coveragerc -o ingestion/coverage.xml || true
-	sed -e "s/$(shell python -c "import site; import os; from pathlib import Path; print(os.path.relpath(site.getsitepackages()[0], str(Path.cwd())).replace('/','\/'))")/src/g" ingestion/coverage.xml >> ingestion/ci-coverage.xml
+	sed -e "s/$(shell python3 -c "import site; import os; from pathlib import Path; print(os.path.relpath(site.getsitepackages()[0], str(Path.cwd())).replace('/','\/'))")/src/g" ingestion/coverage.xml >> ingestion/ci-coverage.xml
 
 .PHONY: sonar_ingestion
 sonar_ingestion:  ## Run the Sonar analysis based on the tests results and push it to SonarCloud
@@ -102,7 +102,7 @@ run_apis_tests:  ## Run the openmetadata airflow apis tests
 coverage_apis:  ## Run the python tests on openmetadata-airflow-apis
 	$(MAKE) run_apis_tests
 	coverage xml --rcfile openmetadata-airflow-apis/.coveragerc -o openmetadata-airflow-apis/coverage.xml
-	sed -e "s/$(shell python -c "import site; import os; from pathlib import Path; print(os.path.relpath(site.getsitepackages()[0], str(Path.cwd())).replace('/','\/'))")\///g" openmetadata-airflow-apis/coverage.xml >> openmetadata-airflow-apis/ci-coverage.xml
+	sed -e "s/$(shell python3 -c "import site; import os; from pathlib import Path; print(os.path.relpath(site.getsitepackages()[0], str(Path.cwd())).replace('/','\/'))")\///g" openmetadata-airflow-apis/coverage.xml >> openmetadata-airflow-apis/ci-coverage.xml
 
 ## Yarn
 .PHONY: yarn_install_cache
@@ -145,21 +145,21 @@ core_bump_version_dev:  ## Bump a `dev` version to the ingestion-core module. To
 
 .PHONY: core_py_antlr
 core_py_antlr:  ## Generate the Python core code for parsing FQNs under ingestion-core
-	antlr4 -Dlanguage=Python3 -o ingestion-core/src/metadata/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=Python3 -o ingestion-core/src/metadata/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 .PHONY: py_antlr
 py_antlr:  ## Generate the Python code for parsing FQNs
-	antlr4 -Dlanguage=Python3 -o ingestion/src/metadata/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=Python3 -o ingestion/src/metadata/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 .PHONY: js_antlr
 js_antlr:  ## Generate the Python code for parsing FQNs
-	antlr4 -Dlanguage=JavaScript -o openmetadata-ui/src/main/resources/ui/src/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=JavaScript -o openmetadata-ui/src/main/resources/ui/src/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 
 .PHONY: install_antlr_cli
 install_antlr_cli:  ## Install antlr CLI locally
 	echo '#!/usr/bin/java -jar' > /usr/local/bin/antlr4
-	curl https://www.antlr.org/download/antlr-4.9.2-complete.jar >> /usr/local/bin/antlr4
+	curl https://www.antlr.org/download/antlr-4.13.1-complete.jar >> /usr/local/bin/antlr4
 	chmod 755 /usr/local/bin/antlr4
 
 .PHONY: docker-docs-local
