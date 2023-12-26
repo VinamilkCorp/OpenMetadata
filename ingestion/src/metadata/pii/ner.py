@@ -34,9 +34,9 @@ class NEREntity(Enum):
     IBAN_CODE = TagType.SENSITIVE.value
     IP_ADDRESS = TagType.SENSITIVE.value
     NRP = TagType.NONSENSITIVE.value
-    LOCATION = TagType.NONSENSITIVE.value
+    LOCATION = TagType.SENSITIVE.value
     PERSON = TagType.SENSITIVE.value
-    PHONE_NUMBER = TagType.NONSENSITIVE.value
+    PHONE_NUMBER = TagType.SENSITIVE.value
     MEDICAL_LICENSE = TagType.SENSITIVE.value
     URL = TagType.NONSENSITIVE.value
 
