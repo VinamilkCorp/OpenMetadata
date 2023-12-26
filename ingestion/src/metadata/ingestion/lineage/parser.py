@@ -18,7 +18,7 @@ from logging.config import DictConfigurator
 from typing import Any, Dict, List, Optional, Tuple
 
 import sqlparse
-from cached_property import cached_property
+from functools import cached_property
 from sqllineage import SQLPARSE_DIALECT
 from sqllineage.core.models import Column, Table
 from sqllineage.exceptions import SQLLineageException

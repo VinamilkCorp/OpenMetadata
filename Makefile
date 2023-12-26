@@ -58,11 +58,11 @@ py_format_check:  ## Check if Python sources are correctly formatted
 generate:  ## Generate the pydantic models from the JSON Schemas to the ingestion module
 	@echo "Running Datamodel Code Generator"
 	@echo "Make sure to first run the install_dev recipe"
-	rm -rf ingestion/src/metadata/generated
-	mkdir -p ingestion/src/metadata/generated
-	python scripts/datamodel_generation.py
+	rm -rf ./ingestion/src/metadata/generated
+	mkdir -p ./ingestion/src/metadata/generated
+	python3 scripts/datamodel_generation.py
 	$(MAKE) py_antlr js_antlr
-	$(MAKE) install
+	# $(MAKE) install
 
 ## Ingestion tests & QA
 .PHONY: run_ometa_integration_tests
@@ -142,7 +142,7 @@ core_generate:  ## Generate the pydantic models from the JSON Schemas to the ing
 	$(MAKE) core_install_dev
 	mkdir -p ingestion-core/src/metadata/generated; \
 	. ingestion-core/venv/bin/activate; \
-	datamodel-codegen --input openmetadata-spec/src/main/resources/json/schema  --input-file-type jsonschema --output ingestion-core/src/metadata/generated/schema
+	datamodel-codegen --input ./openmetadata-spec/src/main/resources/json/schema  --input-file-type jsonschema --output ./ingestion-core/src/metadata/generated/schema
 	$(MAKE) core_py_antlr
 
 .PHONY: core_bump_version_dev
@@ -154,15 +154,15 @@ core_bump_version_dev:  ## Bump a `dev` version to the ingestion-core module. To
 
 .PHONY: core_py_antlr
 core_py_antlr:  ## Generate the Python core code for parsing FQNs under ingestion-core
-	antlr4 -Dlanguage=Python3 -o ingestion-core/src/metadata/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=Python3 -Xexact-output-dir -o ./ingestion-core/src/metadata/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 .PHONY: py_antlr
 py_antlr:  ## Generate the Python code for parsing FQNs
-	antlr4 -Dlanguage=Python3 -o ingestion/src/metadata/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=Python3 -Xexact-output-dir -o ./ingestion/src/metadata/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 .PHONY: js_antlr
 js_antlr:  ## Generate the Python code for parsing FQNs
-	antlr4 -Dlanguage=JavaScript -o openmetadata-ui/src/main/resources/ui/src/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=JavaScript -o ./openmetadata-ui/src/main/resources/ui/src/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 
 .PHONY: install_antlr_cli

@@ -15,7 +15,7 @@ import math
 import traceback
 from typing import Any, Callable, Dict, List, Optional
 
-from cached_property import cached_property
+from functools import cached_property
 from tableau_api_lib import TableauServerConnection
 from tableau_api_lib.utils import extract_pages
 
