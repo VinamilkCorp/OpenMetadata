@@ -25,7 +25,7 @@ from metadata.generated.schema.type.basic import Uuid
 from metadata.generated.schema.type.entityReference import EntityReference
 from metadata.ingestion.ometa.client import REST
 from metadata.ingestion.ometa.utils import model_str
-
+from pydantic import ValidationError
 
 class OMetaQueryMixin:
     """
@@ -42,7 +42,13 @@ class OMetaQueryMixin:
 
     def _get_or_create_query(self, query: CreateQueryRequest) -> Optional[Query]:
         query_hash = self._get_query_hash(query=query.query.__root__)
-        query_entity = self.get_by_name(entity=Query, fqn=query_hash)
+
+        try:
+            query_entity = self.get_by_name(entity=Query, fqn=query_hash)
+        except ValidationError as e:
+            # Handle old query_entity
+            query_entity = None
+
         if query_entity is None:
             resp = self.client.put(self.get_suffix(Query), data=query.json())
             if resp and resp.get("id"):
