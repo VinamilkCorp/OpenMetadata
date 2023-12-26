@@ -28,29 +28,29 @@ class ColumnNameScanner:
     sensitive_regex = {
         "PASSWORD": re.compile("^.*password.*$", re.IGNORECASE),
         "SSN": re.compile("^.*(ssn|social).*$", re.IGNORECASE),
-        "CREDIT_CARD": re.compile("^.*(credit).*(card).*$", re.IGNORECASE),
+        "CREDIT_CARD": re.compile("^.*(credit).*(visa).*(master).*(card).*$", re.IGNORECASE),
         "BANK_ACCOUNT": re.compile("^.*bank.*(acc|num).*$", re.IGNORECASE),
         "EMAIL_ADDRESS": re.compile("^.*(email|e-mail|mail).*$", re.IGNORECASE),
-        "USER_NAME": re.compile("^.*(user|client|person).*(name).*$", re.IGNORECASE),
         "PERSON": re.compile(
             "^.*(firstname|lastname|fullname|maidenname|nickname|name_suffix).*$",
             re.IGNORECASE,
         ),
-    }
-    non_sensitive_regex = {
+        "PHONE_NUMBER": re.compile("^.*(phone|so_dien_thoai|sdt).*$", re.IGNORECASE),
         "BIRTH_DATE": re.compile(
             "^.*(date_of_birth|dateofbirth|dob|"
             "birthday|date_of_death|dateofdeath).*$",
             re.IGNORECASE,
         ),
         "GENDER": re.compile("^.*(gender).*$", re.IGNORECASE),
-        "NATIONALITY": re.compile("^.*(nationality).*$", re.IGNORECASE),
         "ADDRESS": re.compile(
             "^.*(address|city|state|county|country|"
             "zipcode|zip|postal|zone|borough).*$",
             re.IGNORECASE,
         ),
-        "PHONE_NUMBER": re.compile("^.*(phone).*$", re.IGNORECASE),
+        "NATIONALITY": re.compile("^.*(nationality).*$", re.IGNORECASE),
+    }
+    non_sensitive_regex = {
+        "USER_NAME": re.compile("^.*(user|client|person).*(name).*$", re.IGNORECASE),
     }
 
     @classmethod
