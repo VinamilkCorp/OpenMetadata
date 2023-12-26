@@ -239,7 +239,7 @@ class OpenMetadataSource(Source):
         tables = self.metadata.list_all_entities(
             entity=Table,
             fields=[
-                "tableProfilerConfig",
+                "*",
             ],
             params={
                 "service": self.config.source.serviceName,
