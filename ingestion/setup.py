@@ -24,7 +24,7 @@ VERSIONS = {
     "avro": "avro>=1.11.3,<1.12",
     "boto3": "boto3>=1.20,<2.0",  # No need to add botocore separately. It's a dep from boto3
     "geoalchemy2": "GeoAlchemy2~=0.12",
-    "google-cloud-storage": "google-cloud-storage==1.43.0",
+    "google-cloud-storage": "google-cloud-storage>=2.7.0",
     "gcsfs": "gcsfs~=2022.11",
     "great-expectations": "great-expectations>=0.18.0,<0.18.14",
     "grpc-tools": "grpcio-tools>=1.47.2",
