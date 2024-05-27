@@ -30,22 +30,34 @@ yarn_start_dev_ui:  ## Run the UI locally with Yarn
 
 .PHONY: py_antlr
 py_antlr:  ## Generate the Python code for parsing FQNs
-	antlr4 -Dlanguage=Python3 -o ingestion/src/metadata/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=Python3 -Xexact-output-dir -o ./ingestion/src/metadata/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 .PHONY: js_antlr
 js_antlr:  ## Generate the Python code for parsing FQNs
-	antlr4 -Dlanguage=JavaScript -o openmetadata-ui/src/main/resources/ui/src/generated/antlr ${PWD}/openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
+	antlr4 -Dlanguage=JavaScript -o ./openmetadata-ui/src/main/resources/ui/src/generated/antlr ./openmetadata-spec/src/main/antlr4/org/openmetadata/schema/*.g4
 
 ## Ingestion models generation
 .PHONY: generate
 generate:  ## Generate the pydantic models from the JSON Schemas to the ingestion module
 	@echo "Running Datamodel Code Generator"
 	@echo "Make sure to first run the install_dev recipe"
-	rm -rf ingestion/src/metadata/generated
-	mkdir -p ingestion/src/metadata/generated
-	python scripts/datamodel_generation.py
+	rm -rf ./ingestion/src/metadata/generated
+	mkdir -p ./ingestion/src/metadata/generated
+	python3 scripts/datamodel_generation.py
 	$(MAKE) py_antlr js_antlr
-	$(MAKE) install
+	# $(MAKE) install
+
+.PHONY: vnm-build
+vnm-build:
+	cd ${PWD}/ingestion;\
+		rm -rf ./build;\
+		rm -rf ./dist;\
+		python3 setup.py build sdist bdist_wheel;
+		
+	cd ${PWD}/openmetadata-airflow-apis;\
+		rm -rf ${PWD}/openmetadata-airflow-apis/build;\
+		rm -rf ${PWD}/openmetadata-airflow-apis/dist;\
+		pip3 wheel --no-deps -w dist .;
 
 .PHONY: install_antlr_cli
 install_antlr_cli:  ## Install antlr CLI locally
