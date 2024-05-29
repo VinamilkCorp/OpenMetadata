@@ -57,7 +57,7 @@ vnm-build:
 	cd ${PWD}/openmetadata-airflow-apis;\
 		rm -rf ${PWD}/openmetadata-airflow-apis/build;\
 		rm -rf ${PWD}/openmetadata-airflow-apis/dist;\
-		pip3 wheel --no-deps -w dist .;
+		python3 -m build . --sdist;
 
 .PHONY: install_antlr_cli
 install_antlr_cli:  ## Install antlr CLI locally
