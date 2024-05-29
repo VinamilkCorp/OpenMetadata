@@ -97,7 +97,7 @@ base_requirements = {
     VERSIONS["boto3"],  # Required in base for the secrets manager
     "cached-property==1.5.2",  # LineageParser
     "chardet==4.0.0",  # Used in the profiler
-    "cryptography>=42.0.0",
+    "cryptography>=41.0.7, <42.0.0",
     "email-validator>=1.0.3",  # For the pydantic generated models for Email
     "importlib-metadata>=4.13.0",  # From airflow constraints
     "Jinja2>=2.11.3",
